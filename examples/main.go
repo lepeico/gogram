@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/lepeico/gogram/pkg/telegram"
+	"github.com/lepeico/gogram/pkg/gogram"
 )
 
 func init() {
@@ -23,12 +23,12 @@ func main() {
 		os.Exit(2)
 	}
 
-	tg := telegram.New(botToken)
+	gram := gogram.New(botToken)
 
-	res, err := tg.GetMe()
+	err := gram.Launch()
 	if err != nil {
 		fmt.Println(err)
 	} else {
-		fmt.Println(res)
+		fmt.Printf("%+v\n", gram)
 	}
 }
