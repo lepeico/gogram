@@ -18,6 +18,7 @@ type Client struct {
 }
 
 func (c *Client) Call(method string, payload url.Values) (result json.RawMessage, err error) {
+	// TODO: Generify Call func to return result as requested type struct
 	var response Response
 	if c.Token == "" {
 		return response.Result, errors.New("No Token provided")
@@ -37,6 +38,7 @@ func (c *Client) Call(method string, payload url.Values) (result json.RawMessage
 	json.NewDecoder(res.Body).Decode(&response)
 
 	if response.OK == false {
+		// TODO: return error from response
 		return response.Result, errors.New("Bad Request")
 	}
 

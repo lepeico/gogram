@@ -7,10 +7,14 @@ type ResponseParameters struct {
 	RetryAfter      int   `json:"retry_after"`
 }
 
-type Response struct {
-	OK          bool                `json:"ok"`
-	Result      json.RawMessage     `json:"result"`
+type ErrorPayload struct {
 	ErrorCode   int                 `json:"error_code"`
 	Description string              `json:"description"`
 	Parameters  *ResponseParameters `json:"parameters"`
+}
+
+type Response struct {
+	OK     bool            `json:"ok"`
+	Result json.RawMessage `json:"result"`
+	ErrorPayload
 }
