@@ -5,8 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
-	"strings"
 	"time"
 )
 
@@ -17,7 +15,7 @@ type Client struct {
 	httpClient *http.Client
 }
 
-func (c *Client) Call(method string, payload url.Values) (result json.RawMessage, err error) {
+func (c *Client) Call(method string, payload Payload) (result json.RawMessage, err error) {
 	// TODO: Generify Call func to return result as requested type struct
 	var response Response
 	if c.Token == "" {
@@ -25,8 +23,7 @@ func (c *Client) Call(method string, payload url.Values) (result json.RawMessage
 	}
 
 	url := fmt.Sprintf("%s/bot%s/%s", c.APIRoot, c.Token, method)
-	req, err := http.NewRequest("POST", url, strings.NewReader(payload.Encode()))
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	req, err := newJSONRequest(payload, url)
 	req.Header.Set("Connection", "keep-alive")
 
 	res, err := c.httpClient.Do(req)
