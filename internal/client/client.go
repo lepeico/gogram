@@ -23,7 +23,16 @@ func (c *Client) Call(method string, payload Payload) (result json.RawMessage, e
 	}
 
 	url := fmt.Sprintf("%s/bot%s/%s", c.APIRoot, c.Token, method)
-	req, err := newJSONRequest(payload, url)
+	var req *http.Request
+	if payload.HasReader() {
+		req, err = newFormRequest(url, payload)
+	} else {
+		req, err = newJSONRequest(url, payload)
+	}
+	if err != nil {
+		return response.Result, err
+	}
+
 	req.Header.Set("Connection", "keep-alive")
 
 	res, err := c.httpClient.Do(req)
@@ -33,10 +42,9 @@ func (c *Client) Call(method string, payload Payload) (result json.RawMessage, e
 	defer res.Body.Close()
 
 	json.NewDecoder(res.Body).Decode(&response)
-
 	if response.OK == false {
-		// TODO: return error from response
-		return response.Result, errors.New("Bad Request")
+		// TODO: return full error from response
+		return response.Result, errors.New(response.Description)
 	}
 
 	return response.Result, nil

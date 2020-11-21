@@ -3,7 +3,13 @@ package client
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
+	"io/ioutil"
+	"mime/multipart"
 	"net/http"
+	"net/textproto"
+	"os"
 )
 
 type Payload map[string]interface{}
@@ -12,37 +18,48 @@ func (p Payload) Set(key string, value interface{}) {
 	p[key] = value
 }
 
-func newJSONRequest(payload Payload, url string) (req *http.Request, err error) {
+func (p Payload) HasReader() bool {
+	for _, f := range p {
+		switch f.(type) {
+		case io.Reader:
+			return true
+		}
+	}
+	return false
+}
+
+func newJSONRequest(url string, payload Payload) (req *http.Request, err error) {
 	js, _ := json.Marshal(payload)
 	req, err = http.NewRequest("POST", url, bytes.NewBuffer(js))
 	req.Header.Set("Content-type", "application/json")
-	return req, err
+	return
 }
 
-// func newFormRequest(payload Payload, url string) (req *http.Request, err error) {
-// 	var b bytes.Buffer
-// 	w := multipart.NewWriter(&b)
-// 	defer w.Close()
-// 	for key, r := range payload {
-// 		var fw io.Writer
-// 		if x, ok := r.(io.Closer); ok {
-// 			defer x.Close()
-// 		}
-// 		if x, ok := r.(*os.File); ok {
-// 			if fw, err = w.CreateFormFile(key, x.Name()); err != nil {
-// 				return
-// 			}
-// 		} else {
-// 			if fw, err = w.CreateFormField(key); err != nil {
-// 				return
-// 			}
-// 		}
-// 		if _, err = io.Copy(fw, r); err != nil {
-// 			return err
-// 		}
-// 	}
+func newFormRequest(url string, payload Payload) (req *http.Request, err error) {
+	buf := new(bytes.Buffer)
+	readers := append([]io.Reader{}, buf)
+	w := multipart.NewWriter(buf)
+	defer w.Close()
 
-// 	req, err = http.NewRequest("POST", url, &b)
-// 	req.Header.Set("Content-type", w.FormDataContentType())
-// 	return req, err
-// }
+	for k, f := range payload {
+		switch val := f.(type) {
+		case string:
+			w.WriteField(k, val)
+		case *os.File:
+			mediaHeader := textproto.MIMEHeader{}
+			mediaHeader.Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%v\".", val.Name()))
+			mediaHeader.Set("Content-ID", "media")
+			mediaHeader.Set("Content-Filename", val.Name())
+
+			mediaPart, _ := w.CreatePart(mediaHeader)
+			data, _ := ioutil.ReadAll(val)
+
+			io.Copy(mediaPart, bytes.NewBuffer(data))
+		}
+	}
+
+	readers = append(readers, bytes.NewBufferString(fmt.Sprintf("\r\n--%s--\r\n", w.Boundary())))
+	req, err = http.NewRequest("POST", url, ioutil.NopCloser(io.MultiReader(readers...)))
+	req.Header.Set("Content-type", w.FormDataContentType())
+	return
+}

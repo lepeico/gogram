@@ -26,12 +26,20 @@ func (tg *Telegram) GetMe() (User, error) {
 	return bot, nil
 }
 
-func (tg *Telegram) SendMessage(chatID string, text string) (json.RawMessage, error) {
+func (tg *Telegram) SendMessage(chatID string, text string) (res json.RawMessage, err error) {
 	message := client.Payload{}
 	message.Set("chat_id", chatID)
 	message.Set("text", text)
 
-	response, _ := tg.Call("sendMessage", message)
+	res, err = tg.Call("sendMessage", message)
+	return
+}
 
-	return response, nil
+func (tg *Telegram) SendDocument(chatID string, document interface{}) (res json.RawMessage, err error) {
+	message := client.Payload{}
+	message.Set("chat_id", chatID)
+	message.Set("document", document)
+
+	res, err = tg.Call("sendDocument", message)
+	return
 }
