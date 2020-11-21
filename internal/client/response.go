@@ -1,6 +1,9 @@
 package client
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type ResponseParameters struct {
 	MigrateToChatID int64 `json:"migrate_to_chat_id"`
@@ -17,4 +20,8 @@ type Response struct {
 	OK     bool            `json:"ok"`
 	Result json.RawMessage `json:"result"`
 	ErrorPayload
+}
+
+func (r Response) Error() string {
+	return fmt.Sprintf(`%d | %s`, r.ErrorCode, r.Description)
 }

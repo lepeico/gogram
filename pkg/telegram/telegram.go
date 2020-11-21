@@ -17,7 +17,7 @@ func New(token string) *Telegram {
 func (tg *Telegram) GetMe() (User, error) {
 	var bot User
 
-	response, err := tg.Call("getMe", client.Payload{})
+	response, err := tg.Call("getMe", nil)
 	if err != nil {
 		return bot, err
 	}

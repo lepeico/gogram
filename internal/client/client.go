@@ -8,6 +8,11 @@ import (
 	"time"
 )
 
+const (
+	botFormat  = "%s/bot%s/%s"
+	fileFormat = "%s/bot%s/%s"
+)
+
 type Client struct {
 	Token      string
 	APIRoot    string
@@ -22,7 +27,7 @@ func (c *Client) Call(method string, payload Payload) (result json.RawMessage, e
 		return response.Result, errors.New("No Token provided")
 	}
 
-	url := fmt.Sprintf("%s/bot%s/%s", c.APIRoot, c.Token, method)
+	url := fmt.Sprintf(botFormat, c.APIRoot, c.Token, method)
 	var req *http.Request
 	if payload.HasReader() {
 		req, err = newFormRequest(url, payload)
@@ -43,8 +48,7 @@ func (c *Client) Call(method string, payload Payload) (result json.RawMessage, e
 
 	json.NewDecoder(res.Body).Decode(&response)
 	if response.OK == false {
-		// TODO: return full error from response
-		return response.Result, errors.New(response.Description)
+		return response.Result, response
 	}
 
 	return response.Result, nil

@@ -18,8 +18,8 @@ func (p Payload) Set(key string, value interface{}) {
 }
 
 func (p Payload) HasReader() bool {
-	for _, f := range p {
-		switch f.(type) {
+	for _, payloadValue := range p {
+		switch payloadValue.(type) {
 		case io.Reader:
 			return true
 		}
@@ -28,7 +28,10 @@ func (p Payload) HasReader() bool {
 }
 
 func newJSONRequest(url string, payload Payload) (req *http.Request, err error) {
-	js, _ := json.Marshal(payload)
+	js, err := json.Marshal(payload)
+	if err != nil {
+		return nil, err
+	}
 	req, err = http.NewRequest("POST", url, bytes.NewBuffer(js))
 	req.Header.Set("Content-type", "application/json")
 	return
@@ -36,26 +39,26 @@ func newJSONRequest(url string, payload Payload) (req *http.Request, err error) 
 
 func newFormRequest(url string, payload Payload) (req *http.Request, err error) {
 	buf := new(bytes.Buffer)
-	w := multipart.NewWriter(buf)
-	defer w.Close()
+	writter := multipart.NewWriter(buf)
+	defer writter.Close()
 
-	for k, f := range payload {
-		switch val := f.(type) {
+	for payloadKey, payloadValue := range payload {
+		switch value := payloadValue.(type) {
 		case string:
-			w.WriteField(k, val)
+			writter.WriteField(payloadKey, value)
 		case *os.File:
-			fw, err := w.CreateFormFile(k, val.Name())
+			fw, err := writter.CreateFormFile(payloadKey, value.Name())
 			if err != nil {
 				return nil, err
 			}
-			if _, err = io.Copy(fw, val); err != nil {
+			if _, err = io.Copy(fw, value); err != nil {
 				return nil, err
 			}
 		}
 	}
 
 	req, err = http.NewRequest("POST", url, buf)
-	req.Header.Set("Content-type", w.FormDataContentType())
+	req.Header.Set("Content-type", writter.FormDataContentType())
 	req.ContentLength += MultipartOffset
 	return
 }
