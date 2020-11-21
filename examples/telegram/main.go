@@ -27,7 +27,7 @@ func main() {
 	}
 
 	gram := telegram.New(botToken)
-	document, err := os.Open(".env")
+	document, err := os.Open("LICENSE")
 	if err != nil {
 		panic(err)
 	}

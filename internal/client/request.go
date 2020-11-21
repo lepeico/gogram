@@ -3,14 +3,13 @@ package client
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
-	"io/ioutil"
 	"mime/multipart"
 	"net/http"
-	"net/textproto"
 	"os"
 )
+
+const MultipartOffset = 68
 
 type Payload map[string]interface{}
 
@@ -37,7 +36,6 @@ func newJSONRequest(url string, payload Payload) (req *http.Request, err error) 
 
 func newFormRequest(url string, payload Payload) (req *http.Request, err error) {
 	buf := new(bytes.Buffer)
-	readers := append([]io.Reader{}, buf)
 	w := multipart.NewWriter(buf)
 	defer w.Close()
 
@@ -46,20 +44,18 @@ func newFormRequest(url string, payload Payload) (req *http.Request, err error) 
 		case string:
 			w.WriteField(k, val)
 		case *os.File:
-			mediaHeader := textproto.MIMEHeader{}
-			mediaHeader.Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"%v\".", val.Name()))
-			mediaHeader.Set("Content-ID", "media")
-			mediaHeader.Set("Content-Filename", val.Name())
-
-			mediaPart, _ := w.CreatePart(mediaHeader)
-			data, _ := ioutil.ReadAll(val)
-
-			io.Copy(mediaPart, bytes.NewBuffer(data))
+			fw, err := w.CreateFormFile(k, val.Name())
+			if err != nil {
+				return nil, err
+			}
+			if _, err = io.Copy(fw, val); err != nil {
+				return nil, err
+			}
 		}
 	}
 
-	readers = append(readers, bytes.NewBufferString(fmt.Sprintf("\r\n--%s--\r\n", w.Boundary())))
-	req, err = http.NewRequest("POST", url, ioutil.NopCloser(io.MultiReader(readers...)))
+	req, err = http.NewRequest("POST", url, buf)
 	req.Header.Set("Content-type", w.FormDataContentType())
+	req.ContentLength += MultipartOffset
 	return
 }
