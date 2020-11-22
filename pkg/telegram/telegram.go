@@ -2,7 +2,6 @@ package telegram
 
 import (
 	"encoding/json"
-	"net/url"
 
 	"github.com/lepeico/gogram/internal/client"
 )
@@ -18,7 +17,7 @@ func New(token string) *Telegram {
 func (tg *Telegram) GetMe() (User, error) {
 	var bot User
 
-	response, err := tg.Call("getMe", url.Values{})
+	response, err := tg.Call("getMe", nil)
 	if err != nil {
 		return bot, err
 	}
@@ -27,12 +26,20 @@ func (tg *Telegram) GetMe() (User, error) {
 	return bot, nil
 }
 
-func (tg *Telegram) SendMessage(chatId string, text string) (json.RawMessage, error) {
-	message := url.Values{}
-	message.Set("chat_id", chatId)
+func (tg *Telegram) SendMessage(chatID string, text string) (res json.RawMessage, err error) {
+	message := client.Payload{}
+	message.Set("chat_id", chatID)
 	message.Set("text", text)
 
-	response, _ := tg.Call("sendMessage", message)
+	res, err = tg.Call("sendMessage", message)
+	return
+}
 
-	return response, nil
+func (tg *Telegram) SendDocument(chatID string, document interface{}) (res json.RawMessage, err error) {
+	message := client.Payload{}
+	message.Set("chat_id", chatID)
+	message.Set("document", document)
+
+	res, err = tg.Call("sendDocument", message)
+	return
 }

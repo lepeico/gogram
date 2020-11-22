@@ -5,9 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
-	"strings"
 	"time"
+)
+
+const (
+	botFormat  = "%s/bot%s/%s"
+	fileFormat = "%s/file/bot%s/%s"
 )
 
 type Client struct {
@@ -17,16 +20,24 @@ type Client struct {
 	httpClient *http.Client
 }
 
-func (c *Client) Call(method string, payload url.Values) (result json.RawMessage, err error) {
+func (c *Client) Call(method string, payload Payload) (result json.RawMessage, err error) {
 	// TODO: Generify Call func to return result as requested type struct
 	var response Response
 	if c.Token == "" {
 		return response.Result, errors.New("No Token provided")
 	}
 
-	url := fmt.Sprintf("%s/bot%s/%s", c.APIRoot, c.Token, method)
-	req, err := http.NewRequest("POST", url, strings.NewReader(payload.Encode()))
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	url := fmt.Sprintf(botFormat, c.APIRoot, c.Token, method)
+	var req *http.Request
+	if payload.HasReader() {
+		req, err = newFormRequest(url, payload)
+	} else {
+		req, err = newJSONRequest(url, payload)
+	}
+	if err != nil {
+		return response.Result, err
+	}
+
 	req.Header.Set("Connection", "keep-alive")
 
 	res, err := c.httpClient.Do(req)
@@ -36,10 +47,8 @@ func (c *Client) Call(method string, payload url.Values) (result json.RawMessage
 	defer res.Body.Close()
 
 	json.NewDecoder(res.Body).Decode(&response)
-
 	if response.OK == false {
-		// TODO: return error from response
-		return response.Result, errors.New("Bad Request")
+		return response.Result, response
 	}
 
 	return response.Result, nil

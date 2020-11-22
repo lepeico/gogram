@@ -1,12 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
 	"github.com/joho/godotenv"
-	"github.com/lepeico/gogram/pkg/gogram"
+	"github.com/lepeico/gogram/pkg/telegram"
 )
 
 func init() {
@@ -18,17 +17,25 @@ func init() {
 
 func main() {
 	botToken, exists := os.LookupEnv("TELEGRAM_TOKEN")
-
 	if !exists {
 		os.Exit(2)
 	}
 
-	gram := gogram.New(botToken)
+	dev, exists := os.LookupEnv("DEV_ID")
+	if !exists {
+		os.Exit(2)
+	}
 
-	err := gram.Launch()
+	gram := telegram.New(botToken)
+	document, err := os.Open("LICENSE")
 	if err != nil {
-		fmt.Println(err)
+		panic(err)
+	}
+	defer document.Close()
+
+	if js, err := gram.SendDocument(dev, document); err != nil {
+		log.Print(err)
 	} else {
-		fmt.Printf("%+v\n", gram)
+		log.Printf("%+v\n", string(js))
 	}
 }
