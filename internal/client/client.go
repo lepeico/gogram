@@ -10,7 +10,7 @@ import (
 
 const (
 	botFormat  = "%s/bot%s/%s"
-	fileFormat = "%s/bot%s/%s"
+	fileFormat = "%s/file/bot%s/%s"
 )
 
 type Client struct {
