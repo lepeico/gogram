@@ -27,6 +27,8 @@ func (tg *Telegram) GetMe() (User, error) {
 	return bot, nil
 }
 
+/// Available methods
+
 func (tg *Telegram) SendMessage(chatID, text string) (res json.RawMessage, err error) {
 	message := client.Payload{}
 	message.Set("chat_id", chatID)
@@ -455,4 +457,64 @@ func (tg *Telegram) GetMyCommands() (res json.RawMessage, err error) {
 
 	res, err = tg.Call("getMyCommands", message)
 	return
+}
+
+/// Updating messages
+
+func (tg *Telegram) EditMessageText(chatID, messageID, text string) (res json.RawMessage, err error) {
+	message := client.Payload{}
+	message.Set("chat_id", chatID)
+	message.Set("message_id", messageID)
+	message.Set("text", text)
+
+	//res, err = tg.Call("editMessageText", message)
+	return tg.Call("editMessageText", message)
+}
+
+func (tg *Telegram) EditMessageCaption(chatID, messageID, caption string) (res json.RawMessage, err error) {
+	message := client.Payload{}
+	message.Set("chat_id", chatID)
+	message.Set("message_id", messageID)
+	message.Set("caption", caption)
+
+	//res, err = tg.Call("editMessageText", message)
+	return tg.Call("editMessageCaption", message)
+}
+
+//TODO
+// func (tg *Telegram) EditMessageMedia(chatID, messageID string, media interface{}) (res json.RawMessage, err error) {
+// 	message := client.Payload{}
+// 	message.Set("chat_id", chatID)
+// 	message.Set("message_id", messageID)
+// 	message.Set("media", media)
+
+// 	res, err = tg.Call("editMessageMedia", message)
+// 	return
+// }
+
+//TODO
+// func (tg *Telegram) EditMessageReplyMarkup(chatID, messageID string, replyMarkup interface{}) (res json.RawMessage, err error) {
+// 	message := client.Payload{}
+// 	message.Set("chat_id", chatID)
+// 	message.Set("message_id", messageID)
+// 	message.Set("reply_markup", replyMarkup)
+
+// 	//res, err = tg.Call("editMessageText", message)
+// 	return tg.Call("editMessageReplyMarkup", message)
+// }
+
+func (tg *Telegram) StopPoll(chatID, messageID string) (json.RawMessage, error) {
+	message := client.Payload{}
+	message.Set("chat_id", chatID)
+	message.Set("message_id", messageID)
+
+	return tg.Call("stopPoll", message)
+}
+
+func (tg *Telegram) DeleteMessage(chatID, messageID string) (json.RawMessage, error) {
+	message := client.Payload{}
+	message.Set("chat_id", chatID)
+	message.Set("message_id", messageID)
+
+	return tg.Call("deleteMessage", message)
 }
