@@ -1015,8 +1015,8 @@ type ResponseParameters struct {
 	RetryAfter int `json:"retry_after"`
 }
 
-// InputFile   represents the contents of a file to be uploaded. 
-// Must be posted using multipart/form-data in the usual way 
+// InputFile   represents the contents of a file to be uploaded.
+// Must be posted using multipart/form-data in the usual way
 // that files are uploaded via the browser.
 type InputFile interface {}
 
@@ -2035,8 +2035,8 @@ type InlineQueryResultCachedAudio struct {
 	// Optional
 	InputMessageContent *InputMessageContent `json:"input_message_content"`
 }
-// InputMessageContent  represents the content of 
-// a message to be sent as a result of an inline query. 
+// InputMessageContent  represents the content of
+// a message to be sent as a result of an inline query.
 // Telegram clients currently support the following 4 types:
 type InputMessageContent interface {}
 
@@ -2433,10 +2433,10 @@ type PassportElementErrorFile struct {
 	// Source error source,must be file
 	Source string `json:"source"`
 	// Type the section of the user's Telegram Passport which has the issue,
-	//  one of “utility_bill”, “bank_statement”, 
+	//  one of “utility_bill”, “bank_statement”,
 	// “rental_agreement”, “passport_registration”, “temporary_registration”
 	Type string `json:"type"`
-	// FileHash base64-encoded hash 
+	// FileHash base64-encoded hash
 	FileHash string `json:"file_hash"`
 	// Message error message
 	Message string `json:"message"`
@@ -2448,60 +2448,60 @@ type PassportElementErrorFiles struct {
 	// Source error source,must be files
 	Source string `json:"source"`
 	// Type the section of the user's Telegram Passport which has the issue,
-	// one of “utility_bill”, “bank_statement”, 
+	// one of “utility_bill”, “bank_statement”,
 	// “rental_agreement”, “passport_registration”, “temporary_registration”
 	Type string `json:"type"`
-	// FilesHash list of base64-encoded file hashes 
+	// FilesHash list of base64-encoded file hashes
 	FilesHash []string `json:"files_hash"`
 	// Message error message
 	Message string `json:"message"`
 }
 
-// PassportElementErrorTranslationFile representsan issue with one of the files that constitute the translation of a document. 
+// PassportElementErrorTranslationFile representsan issue with one of the files that constitute the translation of a document.
 // The error is considered resolved when the file changes.
 type PassportElementErrorTranslationFile struct {
 	// Source error source,must be translation_file
 	Source string `json:"source"`
 	// Type the section of the user's Telegram Passport which has the issue,
-	//  one of “passport”, “driver_license”, “identity_card”, 
+	//  one of “passport”, “driver_license”, “identity_card”,
 	// “internal_passport”, “utility_bill”, “bank_statement”,
 	//  “rental_agreement”, “passport_registration”, “temporary_registration”
 	Type string `json:"type"`
-	// FilesHash base64-encoded file hash 
+	// FilesHash base64-encoded file hash
 	FileHash string `json:"files_hash"`
 	// Message error message
 	Message string `json:"message"`
 }
 
-// PassportElementErrorTranslationFiles represents an issue with the translated version of a document. 
+// PassportElementErrorTranslationFiles represents an issue with the translated version of a document.
 // The error is considered resolved when a file with the document translation change.
 type PassportElementErrorTranslationFiles struct {
 	// Source error source,must be translation_files
 	Source string `json:"source"`
 	// Type the section of the user's Telegram Passport which has the issue,
-	//  one of “passport”, “driver_license”, “identity_card”, 
+	//  one of “passport”, “driver_license”, “identity_card”,
 	// “internal_passport”, “utility_bill”, “bank_statement”,
 	//  “rental_agreement”, “passport_registration”, “temporary_registration”
 	Type string `json:"type"`
-	// FilesHash list of base64-encoded file hashes 
+	// FilesHash list of base64-encoded file hashes
 	FileHash string `json:"files_hash"`
 	// Message error message
 	Message string `json:"message"`
 }
 
-// PassportElementErrorUnspecified represents an issue in an unspecified place. 
+// PassportElementErrorUnspecified represents an issue in an unspecified place.
 // The error is considered resolved when new data is added.
 type PassportElementErrorUnspecified struct {
 	// Source error source,must be unspecified
 	Source string `json:"source"`
 	// Type the section of the user's Telegram Passport which has the issue
 	Type string `json:"type"`
-	// FilesHash  base64-encoded element hashes 
+	// FilesHash  base64-encoded element hashes
 	FileHash string `json:"files_hash"`
 	// Message error message
 	Message string `json:"message"`
 }
-// Game represents a game. 
+// Game represents a game.
 // Use BotFather to create and edit games, their short names will act as unique identifiers.
 type Game struct {
 	// Title of the game
@@ -2524,7 +2524,7 @@ type Game struct {
 	Animation *Animation `json:"animation"`
 }
 
-// CallbackGame a placeholder, currently holds no information. 
+// CallbackGame a placeholder, currently holds no information.
 // Use BotFather to set up your game.
 type CallbackGame struct{}
 
@@ -2536,4 +2536,10 @@ type GameHighScore struct {
 	User *User `json:"user"`
 	// Score score
 	Score int `json:"score"`
+}
+
+// MessageID represents a unique message identifier.
+type MessageID struct {
+	// MessageID is unique message identifier
+	MessageID int `json:"message_id"`
 }

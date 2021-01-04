@@ -20,11 +20,10 @@ type Client struct {
 	httpClient *http.Client
 }
 
-func (c *Client) Call(method string, payload Payload) (result json.RawMessage, err error) {
+func (c *Client) Call(method string, payload Payload, ret interface{}) (err error) {
 	// TODO: Generify Call func to return result as requested type struct
-	var response Response
 	if c.Token == "" {
-		return response.Result, errors.New("No Token provided")
+		return errors.New("No Token provided")
 	}
 
 	url := fmt.Sprintf(botFormat, c.APIRoot, c.Token, method)
@@ -35,23 +34,26 @@ func (c *Client) Call(method string, payload Payload) (result json.RawMessage, e
 		req, err = newJSONRequest(url, payload)
 	}
 	if err != nil {
-		return response.Result, err
+		return err
 	}
 
 	req.Header.Set("Connection", "keep-alive")
 
 	res, err := c.httpClient.Do(req)
 	if err != nil {
-		return response.Result, err
+		return err
 	}
 	defer res.Body.Close()
 
+	var response Response
 	json.NewDecoder(res.Body).Decode(&response)
 	if response.OK == false {
-		return response.Result, response
+		return response
 	}
 
-	return response.Result, nil
+	json.Unmarshal(response.Result, ret)
+
+	return nil
 }
 
 func NewClient(token string) *Client {

@@ -1,520 +1,233 @@
 package telegram
 
 import (
-	"encoding/json"
-	"errors"
-
 	"github.com/lepeico/gogram/internal/client"
 )
 
+type Fields map[string]interface{}
+
 type Telegram struct {
-	client.Client
+	client client.Client
 }
 
 func New(token string) *Telegram {
 	return &Telegram{*client.NewClient(token)}
 }
 
-func (tg *Telegram) GetMe() (User, error) {
-	var bot User
-
-	response, err := tg.Call("getMe", nil)
-	if err != nil {
-		return bot, err
+func createPayload(f Fields, opts []Option) (message client.Payload) {
+	message = client.Payload(f)
+	for _, opt := range opts {
+		message.Set(opt.Name, opt.Parameter)
 	}
-	json.Unmarshal(response, &bot)
-
-	return bot, nil
+	return
 }
 
 /// Available methods
 
-func (tg *Telegram) SendMessage(chatID, text string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("text", text)
-
-	res, err = tg.Call("sendMessage", message)
+func (tg *Telegram) GetMe() (bot User, err error) {
+	err = tg.client.Call("getMe", nil, &bot)
 	return
 }
 
-func (tg *Telegram) SendDocument(chatID string, document interface{}) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("document", document)
-
-	res, err = tg.Call("sendDocument", message)
+func (tg *Telegram) SendMessage(chat Chat, text string, opts ...Option) (msg Message, err error) {
+	err = tg.client.Call("sendMessage", createPayload(Fields{
+		"chat_id": chat.ID,
+		"text":    text,
+	}, opts), &msg)
 	return
 }
 
-func (tg *Telegram) ForwardMessage(chatID, fromChatID, messageID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("from_chat_id", fromChatID)
-	message.Set("message_id", messageID)
-
-	res, err = tg.Call("forwardMessage", message)
+func (tg *Telegram) ForwardMessage(chat Chat, msg Message, opts ...Option) (forwardedMsg Message, err error) {
+	err = tg.client.Call("forwardMessage", createPayload(Fields{
+		"chat_id":      chat.ID,
+		"from_chat_id": msg.Chat.ID,
+		"message_id":   msg.MessageID,
+	}, opts), &forwardedMsg)
 	return
 }
 
-func (tg *Telegram) CopyMessage(chatID, fromChatID, messageID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("from_chat_id", fromChatID)
-	message.Set("message_id", messageID)
-
-	res, err = tg.Call("copyMessage", message)
+func (tg *Telegram) CopyMessage(chat Chat, msg Message, opts ...Option) (msgID MessageID, err error) {
+	err = tg.client.Call("copyMessage", createPayload(Fields{
+		"chat_id":      chat.ID,
+		"from_chat_id": msg.Chat.ID,
+		"message_id":   msg.MessageID,
+	}, opts), msgID)
 	return
 }
 
-func (tg *Telegram) SendPhoto(chatID string, photo interface{}) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("photo", photo)
-
-	res, err = tg.Call("sendPhoto", message)
+func (tg *Telegram) SendPhoto(chat Chat, photo interface{}, opts ...Option) (msg Message, err error) {
+	err = tg.client.Call("sendPhoto", createPayload(Fields{
+		"chat_id": chat.ID,
+		"photo":   photo,
+	}, opts), &msg)
 	return
 }
 
-func (tg *Telegram) SendAudio(chatID string, audio interface{}) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("audio", audio)
-
-	res, err = tg.Call("sendAudio", message)
+func (tg *Telegram) SendAudio(chat Chat, audio interface{}, opts ...Option) (msg Message, err error) {
+	err = tg.client.Call("sendAudio", createPayload(Fields{
+		"chat_id": chat.ID,
+		"audio":   audio,
+	}, opts), &msg)
 	return
 }
 
-func (tg *Telegram) SendVideo(chatID string, video interface{}) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("video", video)
-
-	res, err = tg.Call("sendVideo", message)
+func (tg *Telegram) SendDocument(chat Chat, document interface{}, opts ...Option) (msg Message, err error) {
+	err = tg.client.Call("sendDocument", createPayload(Fields{
+		"chat_id":  chat.ID,
+		"document": document,
+	}, opts), &msg)
 	return
 }
 
-func (tg *Telegram) SendAnimation(chatID string, animation interface{}) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("animation", animation)
-
-	res, err = tg.Call("sendAnimation", message)
+func (tg *Telegram) SendVideo(chat Chat, video interface{}, opts ...Option) (msg Message, err error) {
+	err = tg.client.Call("sendVideo", createPayload(Fields{
+		"chat_id": chat.ID,
+		"video":   video,
+	}, opts), &msg)
 	return
 }
 
-func (tg *Telegram) SendVoice(chatID string, voice interface{}) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("voice", voice)
-
-	res, err = tg.Call("sendVoice", message)
+func (tg *Telegram) SendAnimation(chat Chat, animation interface{}, opts ...Option) (msg Message, err error) {
+	err = tg.client.Call("sendAnimation", createPayload(Fields{
+		"chat_id":   chat.ID,
+		"animation": animation,
+	}, opts), &msg)
 	return
 }
 
-func (tg *Telegram) SendVideoNote(chatID string, videoNote interface{}) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("video_note", videoNote)
-
-	res, err = tg.Call("sendVideoNote", message)
+func (tg *Telegram) SendVoice(chat Chat, voice interface{}, opts ...Option) (msg Message, err error) {
+	err = tg.client.Call("sendVoice", createPayload(Fields{
+		"chat_id": chat.ID,
+		"voice":   voice,
+	}, opts), &msg)
 	return
 }
 
-//mediaGroup - array of audios, documents, photos, videos and links to the media
-// func (tg *Telegram) SendMediaGroup(chatID string, mediaGroup []interface{}) (res json.RawMessage, err error) {
+func (tg *Telegram) SendVideoNote(chat Chat, videoNote interface{}, opts ...Option) (msg Message, err error) {
+	err = tg.client.Call("sendVideoNote", createPayload(Fields{
+		"chat_id":    chat.ID,
+		"video_note": videoNote,
+	}, opts), &msg)
+	return
+}
+
+// // mediaGroup - array of audios, documents, photos, videos and links to the media
+// func (tg *Telegram) SendMediaGroup(chat Chat, mediaGroup []interface{}, opts ...Option) (msg Message, err error) {
 // 	if len(mediaGroup) < 2 || len(mediaGroup) > 10 {
 // 		err = errors.New("mediaGroup size is out of range")
 // 		return nil, err
 // 	}
-//
-// 	message := client.Payload{}
-// 	message.Set("chat_id", chatID)
-// 	message.Set("media", mediaGroup)
-// 	//log.Println(media)
-//
-// 	res, err = tg.Call("sendMediaGroup", message)
+// 	err = tg.client.Call("sendLocation", createPayload(Fields{
+// 		"chat_id": chat.ID,
+// 		"media":   mediaGroup,
+// 	}, opts), msg)
 // 	return
 // }
 
-func (tg *Telegram) SendLocation(chatID string, latitude, longitude float32) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("latitude", latitude)
-	message.Set("longitude", longitude)
-
-	res, err = tg.Call("sendLocation", message)
+func (tg *Telegram) SendLocation(chat Chat, latitude, longitude float32, opts ...Option) (msg Message, err error) {
+	err = tg.client.Call("sendLocation", createPayload(Fields{
+		"chat_id":   chat.ID,
+		"latitude":  latitude,
+		"longitude": longitude,
+	}, opts), &msg)
 	return
 }
 
-func (tg *Telegram) EditMessageLiveLocation(chatID, messageID string, latitude, longitude float32) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("message_id", messageID)
-	message.Set("latitude", latitude)
-	message.Set("longitude", longitude)
-
-	res, err = tg.Call("editMessageLiveLocation", message)
-	return
-}
-
-func (tg *Telegram) StopMessageLiveLocation(chatID, messageID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("message_id", messageID)
-
-	res, err = tg.Call("stopMessageLiveLocation", message)
-	return
-}
-
-func (tg *Telegram) SendVenue(chatID string, latitude, longitude float32, title, address string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("latitude", latitude)
-	message.Set("longitude", longitude)
-	message.Set("title", title)
-	message.Set("address", address)
-
-	res, err = tg.Call("sendVenue", message)
-	return
-}
-
-func (tg *Telegram) SendContact(chatID string, phoneNumber, firstName string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("phone_number", phoneNumber)
-	message.Set("first_name", firstName)
-
-	res, err = tg.Call("sendContact", message)
-	return
-}
-
-func (tg *Telegram) SendPoll(chatID string, question string, options []string) (res json.RawMessage, err error) {
-	if len(options) < 2 || len(options) > 10 {
-		err = errors.New("mediaGroup size is out of range")
-		return nil, err
+func (tg *Telegram) EditMessageLiveLocation(msg Message, latitude, longitude float32, opts ...Option) (editedMsg Message, err error) {
+	if msg.Chat.ID == 0 {
+		opts = append(opts, Option{"inline_message_id", msg.MessageID})
+	} else {
+		opts = append(opts, Option{"chat_id", msg.Chat.ID}, Option{"message_id", msg.MessageID})
 	}
 
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("question", question)
-	message.Set("options", options)
-
-	res, err = tg.Call("sendPoll", message)
+	err = tg.client.Call("editMessageLiveLocation", createPayload(Fields{
+		"latitude":  latitude,
+		"longitude": longitude,
+	}, opts), &editedMsg)
 	return
 }
 
-func (tg *Telegram) SendDice(chatID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-
-	res, err = tg.Call("sendDice", message)
+func (tg *Telegram) StopMessageLiveLocation(msg Message, opts ...Option) (editedMsg Message, err error) {
+	err = tg.client.Call("stopMessageLiveLocation", createPayload(Fields{
+		"chat_id":    msg.Chat.ID,
+		"message_id": msg.MessageID,
+	}, opts), &editedMsg)
 	return
 }
 
-func (tg *Telegram) SendChatAction(chatID, action string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("action", action)
-
-	res, err = tg.Call("sendChatAction", message)
+func (tg *Telegram) SendVenue(chat Chat, latitude, longitude float32, title, address string, opts ...Option) (msg Message, err error) {
+	err = tg.client.Call("sendVenue", createPayload(Fields{
+		"chat_id":   chat.ID,
+		"latitude":  latitude,
+		"longitude": longitude,
+		"title":     title,
+		"address":   address,
+	}, opts), &msg)
 	return
 }
 
-func (tg *Telegram) GetUserProfilePhotos(userID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("user_id", userID)
-
-	res, err = tg.Call("getUserProfilePhotos", message)
+func (tg *Telegram) SendContact(chat Chat, phoneNumber, firstName string, opts ...Option) (msg Message, err error) {
+	err = tg.client.Call("sendContact", createPayload(Fields{
+		"chat_id":      chat.ID,
+		"phone_number": phoneNumber,
+		"first_name":   firstName,
+	}, opts), &msg)
 	return
 }
 
-func (tg *Telegram) GetFile(fileID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("file_id", fileID)
-
-	res, err = tg.Call("getFile", message)
+func (tg *Telegram) SendPoll(chat Chat, question string, variants []string, opts ...Option) (msg Message, err error) {
+	err = tg.client.Call("sendPoll", createPayload(Fields{
+		"chat_id":  chat.ID,
+		"question": question,
+		"options":  variants,
+	}, opts), &msg)
 	return
 }
 
-//TODO: test
-func (tg *Telegram) KickChatMember(chatID, userID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("user_id", userID)
-
-	res, err = tg.Call("kickChatMember", message)
+func (tg *Telegram) SendDice(chat Chat, opts ...Option) (msg Message, err error) {
+	err = tg.client.Call("sendDice", createPayload(Fields{
+		"chat_id": chat.ID,
+	}, opts), &msg)
 	return
 }
 
-//TODO: test
-func (tg *Telegram) UnbanChatMember(chatID, userID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("user_id", userID)
-
-	res, err = tg.Call("unbanChatMember", message)
+func (tg *Telegram) SendChatAction(chat Chat, action string) (res bool, err error) {
+	err = tg.client.Call("sendChatAction", createPayload(Fields{
+		"chat_id": chat.ID,
+		"action":  action,
+	}, []Option{}), &res)
 	return
 }
 
-//TODO: test
-func (tg *Telegram) RestrictChatMember(chatID, userID string, permissions ChatPermissions) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("user_id", userID)
-	message.Set("permissions", permissions)
-
-	res, err = tg.Call("restrictChatMember", message)
+func (tg *Telegram) GetUserProfilePhotos(user User, opts ...Option) (photos UserProfilePhotos, err error) {
+	err = tg.client.Call("getUserProfilePhotos", createPayload(Fields{
+		"user_id": user.ID,
+	}, opts), &photos)
 	return
 }
 
-//TODO: test, add optional parameters
-func (tg *Telegram) PromoteChatMember(chatID, userID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("user_id", userID)
-
-	res, err = tg.Call("promoteChatMember", message)
+func (tg *Telegram) GetFile(fileID string, opts ...Option) (file File, err error) {
+	err = tg.client.Call("getFile", createPayload(Fields{
+		"file_id": fileID,
+	}, opts), &file)
 	return
 }
 
-//TODO: test
-func (tg *Telegram) SetChatAdministratorCustomTitle(chatID, userID, customTitle string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("user_id", userID)
-	message.Set("custom_title", customTitle)
-
-	res, err = tg.Call("setChatAdministratorCustomTitle", message)
+func (tg *Telegram) AnswerCallbackQuery(cbq CallbackQuery, opts ...Option) (answered bool, err error) {
+	err = tg.client.Call("answerCallbackQuery", createPayload(Fields{
+		"callback_query_id": cbq.ID,
+	}, opts), &answered)
 	return
 }
 
-//TODO: test
-func (tg *Telegram) SetChatPermissions(chatID string, permissions ChatPermissions) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("permissions", permissions)
-
-	res, err = tg.Call("setChatPermissions", message)
+func (tg *Telegram) SetMyCommands(commands []BotCommand) (setted bool, err error) {
+	err = tg.client.Call("setMyCommands", createPayload(Fields{
+		"commands": commands,
+	}, []Option{}), &setted)
 	return
 }
 
-//TODO: test
-func (tg *Telegram) ExportChatInviteLink(chatID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-
-	res, err = tg.Call("exportChatInviteLink", message)
+func (tg *Telegram) GetMyCommands() (commands []BotCommand, err error) {
+	err = tg.client.Call("getMyCommands", createPayload(Fields{}, []Option{}), &commands)
 	return
-}
-
-//TODO: test
-func (tg *Telegram) SetChatPhoto(chatID string, photo interface{}) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("photo", photo)
-
-	res, err = tg.Call("setChatPhoto", message)
-	return
-}
-
-//TODO: test
-func (tg *Telegram) DeleteChatPhoto(chatID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-
-	res, err = tg.Call("deleteChatPhoto", message)
-	return
-}
-
-//TODO: test
-func (tg *Telegram) SetChatTitle(chatID, title string) (res json.RawMessage, err error) {
-	if len(title) > 255 {
-		err = errors.New("title size is out of range")
-		return nil, err
-	}
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("title", title)
-
-	res, err = tg.Call("setChatTitle", message)
-	return
-}
-
-//TODO: test, description is optional
-func (tg *Telegram) SetChatDescription(chatID, description string) (res json.RawMessage, err error) {
-	if len(description) > 255 {
-		err = errors.New("description size is out of range")
-		return nil, err
-	}
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("description", description)
-
-	res, err = tg.Call("setChatDescription", message)
-	return
-}
-
-func (tg *Telegram) PinChatMessage(chatID, messageID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("message_id", messageID)
-
-	res, err = tg.Call("pinChatMessage", message)
-	return
-}
-
-func (tg *Telegram) UnpinChatMessage(chatID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-
-	res, err = tg.Call("unpinChatMessage", message)
-	return
-}
-
-func (tg *Telegram) UnpinAllChatMessages(chatID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-
-	res, err = tg.Call("unpinAllChatMessages", message)
-	return
-}
-
-//TODO: test
-func (tg *Telegram) LeaveChat(chatID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-
-	res, err = tg.Call("leaveChat", message)
-	return
-}
-
-//TODO: test
-func (tg *Telegram) GetChatAdministrators(chatID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-
-	res, err = tg.Call("getChatAdministrators", message)
-	return
-}
-
-func (tg *Telegram) GetChatMembersCount(chatID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-
-	res, err = tg.Call("getChatMembersCount", message)
-	return
-}
-
-func (tg *Telegram) GetChatMember(chatID, userID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("user_id", userID)
-
-	res, err = tg.Call("getChatMember", message)
-	return
-}
-
-//TODO: test
-func (tg *Telegram) SetChatStickerSet(chatID, stickerSetName string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("sticker_set_name", stickerSetName)
-
-	res, err = tg.Call("setChatStickerSet", message)
-	return
-}
-
-//TODO: test
-func (tg *Telegram) DeleteChatStickerSet(chatID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-
-	res, err = tg.Call("deleteChatStickerSet", message)
-	return
-}
-
-//TODO: test
-func (tg *Telegram) AnswerCallbackQuery(callbackQueryID string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("callback_query_id", callbackQueryID)
-
-	res, err = tg.Call("answerCallbackQuery", message)
-	return
-}
-
-//TODO: test
-func (tg *Telegram) SetMyCommands(commands []BotCommand) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("commands", commands)
-
-	res, err = tg.Call("setMyCommands", message)
-	return
-}
-
-func (tg *Telegram) GetMyCommands() (res json.RawMessage, err error) {
-	message := client.Payload{}
-
-	res, err = tg.Call("getMyCommands", message)
-	return
-}
-
-/// Updating messages
-
-func (tg *Telegram) EditMessageText(chatID, messageID, text string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("message_id", messageID)
-	message.Set("text", text)
-
-	//res, err = tg.Call("editMessageText", message)
-	return tg.Call("editMessageText", message)
-}
-
-func (tg *Telegram) EditMessageCaption(chatID, messageID, caption string) (res json.RawMessage, err error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("message_id", messageID)
-	message.Set("caption", caption)
-
-	//res, err = tg.Call("editMessageText", message)
-	return tg.Call("editMessageCaption", message)
-}
-
-//TODO
-// func (tg *Telegram) EditMessageMedia(chatID, messageID string, media interface{}) (res json.RawMessage, err error) {
-// 	message := client.Payload{}
-// 	message.Set("chat_id", chatID)
-// 	message.Set("message_id", messageID)
-// 	message.Set("media", media)
-
-// 	res, err = tg.Call("editMessageMedia", message)
-// 	return
-// }
-
-//TODO
-// func (tg *Telegram) EditMessageReplyMarkup(chatID, messageID string, replyMarkup interface{}) (res json.RawMessage, err error) {
-// 	message := client.Payload{}
-// 	message.Set("chat_id", chatID)
-// 	message.Set("message_id", messageID)
-// 	message.Set("reply_markup", replyMarkup)
-
-// 	//res, err = tg.Call("editMessageText", message)
-// 	return tg.Call("editMessageReplyMarkup", message)
-// }
-
-func (tg *Telegram) StopPoll(chatID, messageID string) (json.RawMessage, error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("message_id", messageID)
-
-	return tg.Call("stopPoll", message)
-}
-
-func (tg *Telegram) DeleteMessage(chatID, messageID string) (json.RawMessage, error) {
-	message := client.Payload{}
-	message.Set("chat_id", chatID)
-	message.Set("message_id", messageID)
-
-	return tg.Call("deleteMessage", message)
 }
