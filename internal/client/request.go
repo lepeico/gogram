@@ -7,6 +7,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 const MultipartOffset = 68
@@ -46,6 +47,9 @@ func newFormRequest(url string, payload Payload) (req *http.Request, err error) 
 		switch value := payloadValue.(type) {
 		case string:
 			writter.WriteField(payloadKey, value)
+		case int:
+			v := strconv.Itoa(value)
+			writter.WriteField(payloadKey, v)
 		case *os.File:
 			fw, err := writter.CreateFormFile(payloadKey, value.Name())
 			if err != nil {
