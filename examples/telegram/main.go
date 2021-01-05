@@ -3,11 +3,13 @@ package main
 import (
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 	"github.com/lepeico/gogram/pkg/telegram"
 )
 
+// TODO: make example much smaller
 func init() {
 	// loads values from .env into the system
 	if err := godotenv.Load(); err != nil {
@@ -25,6 +27,7 @@ func main() {
 	if !exists {
 		os.Exit(2)
 	}
+	id, err := strconv.Atoi(dev)
 
 	gram := telegram.New(botToken)
 	document, err := os.Open("LICENSE")
@@ -33,9 +36,9 @@ func main() {
 	}
 	defer document.Close()
 
-	if js, err := gram.SendDocument(dev, document); err != nil {
+	if js, err := gram.SendDocument(telegram.Chat{ID: id}, document); err != nil {
 		log.Print(err)
 	} else {
-		log.Printf("%+v\n", string(js))
+		log.Printf("%+v\n", js)
 	}
 }
