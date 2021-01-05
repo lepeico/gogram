@@ -1,76 +1,68 @@
 package telegram
 
-// import (
-// 	"encoding/json"
+func (tg *Telegram) SendSticker(chat Chat, sticker interface{}, opts ...Option) (msg Message, err error) {
+	err = tg.client.Call("sendSticker", createPayload(fields{
+		"chat_id": chat.ID,
+		"sticker": sticker,
+	}, opts), &msg)
+	return
+}
 
-// 	"github.com/lepeico/gogram/internal/client"
-// )
+func (tg *Telegram) GetStickerSet(name string) (set StickerSet, err error) {
+	err = tg.client.Call("getStickerSet", createPayload(fields{
+		"name": name,
+	}, []Option{}), &set)
+	return
+}
 
-// func (tg *Telegram) SendSticker(chatID string, sticker interface{}) (json.RawMessage, error) {
-// 	message := client.Payload{}
-// 	message.Set("chat_id", chatID)
-// 	message.Set("sticker", sticker)
+func (tg *Telegram) UploadStickerFile(user User, sticker interface{}) (file File, err error) {
+	err = tg.client.Call("uploadStickerFile", createPayload(fields{
+		"user_id":     user.ID,
+		"png_sticker": sticker,
+	}, []Option{}), &file)
+	return
+}
 
-// 	return tg.client.Call("sendSticker", message)
-// }
+//TODO: add tgs_sticker & arrray of emojis
+func (tg *Telegram) CreateNewStickerSet(user User, name, title string, sticker interface{}, emojis string, opts ...Option) (created bool, err error) {
+	err = tg.client.Call("createNewStickerSet", createPayload(fields{
+		"user_id": user.ID,
+		"name":    name,
+		"title":   title,
+		"emojis":  emojis,
+	}, opts), &created)
+	return
+}
 
-// func (tg *Telegram) GetStickerSet(name string) (json.RawMessage, error) {
-// 	message := client.Payload{}
-// 	message.Set("name", name)
+func (tg *Telegram) AddStickerToSet(user User, name, sticker interface{}, emojis string, opts ...Option) (added bool, err error) {
+	err = tg.client.Call("addStickerToSet", createPayload(fields{
+		"user_id": user.ID,
+		"name":    name,
+		"emojis":  emojis,
+	}, opts), &added)
+	return
+}
 
-// 	return tg.client.Call("getStickerSet", message)
-// }
+func (tg *Telegram) SetStickerPositionInSet(sticker Sticker, position int) (setted bool, err error) {
+	err = tg.client.Call("setStickerPositionInSet", createPayload(fields{
+		"sticker":  sticker.FileID,
+		"position": position,
+	}, []Option{}), &setted)
+	return
+}
 
-// func (tg *Telegram) UploadStickerFile(userID string, pngSticker interface{}) (json.RawMessage, error) {
-// 	message := client.Payload{}
-// 	message.Set("user_id", userID)
-// 	message.Set("png_sticker", pngSticker)
+func (tg *Telegram) DeleteStickerFromSet(sticker Sticker) (deleted bool, err error) {
+	err = tg.client.Call("deleteStickerFromSet", createPayload(fields{
+		"sticker": sticker.FileID,
+	}, []Option{}), &deleted)
+	return
+}
 
-// 	return tg.client.Call("uploadStickerFile", message)
-// }
-
-// //TODO: add tgs_sticker & arrray of emojis
-// func (tg *Telegram) CreateNewStickerSet(userID, name, title string, pngSticker interface{}, emojis string) (json.RawMessage, error) {
-// 	message := client.Payload{}
-// 	message.Set("user_id", userID)
-// 	message.Set("name", name)
-// 	message.Set("title", title)
-// 	message.Set("png_sticker", pngSticker)
-// 	message.Set("emojis", emojis)
-
-// 	return tg.client.Call("createNewStickerSet", message)
-// }
-
-// func (tg *Telegram) AddStickerToSet(userID, name, pngSticker interface{}, emojis string) (json.RawMessage, error) {
-// 	message := client.Payload{}
-// 	message.Set("user_id", userID)
-// 	message.Set("name", name)
-// 	message.Set("png_sticker", pngSticker)
-// 	message.Set("emojis", emojis)
-
-// 	return tg.client.Call("addStickerToSet", message)
-// }
-
-// func (tg *Telegram) SetStickerPositionInSet(stickerID, position string) (json.RawMessage, error) {
-// 	message := client.Payload{}
-// 	message.Set("sticker", stickerID)
-// 	message.Set("position", position)
-
-// 	return tg.client.Call("setStickerPositionInSet", message)
-// }
-
-// func (tg *Telegram) DeleteStickerFromSet(stickerID string) (json.RawMessage, error) {
-// 	message := client.Payload{}
-// 	message.Set("sticker", stickerID)
-
-// 	return tg.client.Call("deleteStickerFromSet", message)
-// }
-
-// func (tg *Telegram) SetStickerSetThumb(name, userID string, thumb interface{}) (json.RawMessage, error) {
-// 	message := client.Payload{}
-// 	message.Set("name", name)
-// 	message.Set("user_id", userID)
-// 	message.Set("thumb", thumb)
-
-// 	return tg.client.Call("setStickerSetThumb", message)
-// }
+func (tg *Telegram) SetStickerSetThumb(name string, user User, thumb interface{}) (setted bool, err error) {
+	err = tg.client.Call("setStickerSetThumb", createPayload(fields{
+		"name":    name,
+		"user_id": user.ID,
+		"thumb":   thumb,
+	}, []Option{}), &setted)
+	return
+}
