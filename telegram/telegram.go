@@ -4,7 +4,7 @@ import (
 	"github.com/lepeico/gogram/internal/client"
 )
 
-type Fields map[string]interface{}
+type fields map[string]interface{}
 
 type Telegram struct {
 	client client.Client
@@ -14,7 +14,7 @@ func New(token string) *Telegram {
 	return &Telegram{*client.NewClient(token)}
 }
 
-func createPayload(f Fields, opts []Option) (message client.Payload) {
+func createPayload(f fields, opts []Option) (message client.Payload) {
 	message = client.Payload(f)
 	for _, opt := range opts {
 		message.Set(opt.Name, opt.Parameter)
@@ -30,7 +30,7 @@ func (tg *Telegram) GetMe() (bot User, err error) {
 }
 
 func (tg *Telegram) SendMessage(chat Chat, text string, opts ...Option) (msg Message, err error) {
-	err = tg.client.Call("sendMessage", createPayload(Fields{
+	err = tg.client.Call("sendMessage", createPayload(fields{
 		"chat_id": chat.ID,
 		"text":    text,
 	}, opts), &msg)
@@ -38,7 +38,7 @@ func (tg *Telegram) SendMessage(chat Chat, text string, opts ...Option) (msg Mes
 }
 
 func (tg *Telegram) ForwardMessage(chat Chat, msg Message, opts ...Option) (forwardedMsg Message, err error) {
-	err = tg.client.Call("forwardMessage", createPayload(Fields{
+	err = tg.client.Call("forwardMessage", createPayload(fields{
 		"chat_id":      chat.ID,
 		"from_chat_id": msg.Chat.ID,
 		"message_id":   msg.MessageID,
@@ -47,7 +47,7 @@ func (tg *Telegram) ForwardMessage(chat Chat, msg Message, opts ...Option) (forw
 }
 
 func (tg *Telegram) CopyMessage(chat Chat, msg Message, opts ...Option) (msgID MessageID, err error) {
-	err = tg.client.Call("copyMessage", createPayload(Fields{
+	err = tg.client.Call("copyMessage", createPayload(fields{
 		"chat_id":      chat.ID,
 		"from_chat_id": msg.Chat.ID,
 		"message_id":   msg.MessageID,
@@ -56,7 +56,7 @@ func (tg *Telegram) CopyMessage(chat Chat, msg Message, opts ...Option) (msgID M
 }
 
 func (tg *Telegram) SendPhoto(chat Chat, photo interface{}, opts ...Option) (msg Message, err error) {
-	err = tg.client.Call("sendPhoto", createPayload(Fields{
+	err = tg.client.Call("sendPhoto", createPayload(fields{
 		"chat_id": chat.ID,
 		"photo":   photo,
 	}, opts), &msg)
@@ -64,7 +64,7 @@ func (tg *Telegram) SendPhoto(chat Chat, photo interface{}, opts ...Option) (msg
 }
 
 func (tg *Telegram) SendAudio(chat Chat, audio interface{}, opts ...Option) (msg Message, err error) {
-	err = tg.client.Call("sendAudio", createPayload(Fields{
+	err = tg.client.Call("sendAudio", createPayload(fields{
 		"chat_id": chat.ID,
 		"audio":   audio,
 	}, opts), &msg)
@@ -72,7 +72,7 @@ func (tg *Telegram) SendAudio(chat Chat, audio interface{}, opts ...Option) (msg
 }
 
 func (tg *Telegram) SendDocument(chat Chat, document interface{}, opts ...Option) (msg Message, err error) {
-	err = tg.client.Call("sendDocument", createPayload(Fields{
+	err = tg.client.Call("sendDocument", createPayload(fields{
 		"chat_id":  chat.ID,
 		"document": document,
 	}, opts), &msg)
@@ -80,7 +80,7 @@ func (tg *Telegram) SendDocument(chat Chat, document interface{}, opts ...Option
 }
 
 func (tg *Telegram) SendVideo(chat Chat, video interface{}, opts ...Option) (msg Message, err error) {
-	err = tg.client.Call("sendVideo", createPayload(Fields{
+	err = tg.client.Call("sendVideo", createPayload(fields{
 		"chat_id": chat.ID,
 		"video":   video,
 	}, opts), &msg)
@@ -88,7 +88,7 @@ func (tg *Telegram) SendVideo(chat Chat, video interface{}, opts ...Option) (msg
 }
 
 func (tg *Telegram) SendAnimation(chat Chat, animation interface{}, opts ...Option) (msg Message, err error) {
-	err = tg.client.Call("sendAnimation", createPayload(Fields{
+	err = tg.client.Call("sendAnimation", createPayload(fields{
 		"chat_id":   chat.ID,
 		"animation": animation,
 	}, opts), &msg)
@@ -96,7 +96,7 @@ func (tg *Telegram) SendAnimation(chat Chat, animation interface{}, opts ...Opti
 }
 
 func (tg *Telegram) SendVoice(chat Chat, voice interface{}, opts ...Option) (msg Message, err error) {
-	err = tg.client.Call("sendVoice", createPayload(Fields{
+	err = tg.client.Call("sendVoice", createPayload(fields{
 		"chat_id": chat.ID,
 		"voice":   voice,
 	}, opts), &msg)
@@ -104,7 +104,7 @@ func (tg *Telegram) SendVoice(chat Chat, voice interface{}, opts ...Option) (msg
 }
 
 func (tg *Telegram) SendVideoNote(chat Chat, videoNote interface{}, opts ...Option) (msg Message, err error) {
-	err = tg.client.Call("sendVideoNote", createPayload(Fields{
+	err = tg.client.Call("sendVideoNote", createPayload(fields{
 		"chat_id":    chat.ID,
 		"video_note": videoNote,
 	}, opts), &msg)
@@ -117,7 +117,7 @@ func (tg *Telegram) SendVideoNote(chat Chat, videoNote interface{}, opts ...Opti
 // 		err = errors.New("mediaGroup size is out of range")
 // 		return nil, err
 // 	}
-// 	err = tg.client.Call("sendLocation", createPayload(Fields{
+// 	err = tg.client.Call("sendLocation", createPayload(fields{
 // 		"chat_id": chat.ID,
 // 		"media":   mediaGroup,
 // 	}, opts), msg)
@@ -125,7 +125,7 @@ func (tg *Telegram) SendVideoNote(chat Chat, videoNote interface{}, opts ...Opti
 // }
 
 func (tg *Telegram) SendLocation(chat Chat, latitude, longitude float32, opts ...Option) (msg Message, err error) {
-	err = tg.client.Call("sendLocation", createPayload(Fields{
+	err = tg.client.Call("sendLocation", createPayload(fields{
 		"chat_id":   chat.ID,
 		"latitude":  latitude,
 		"longitude": longitude,
@@ -140,7 +140,7 @@ func (tg *Telegram) EditMessageLiveLocation(msg Message, latitude, longitude flo
 		opts = append(opts, Option{"chat_id", msg.Chat.ID}, Option{"message_id", msg.MessageID})
 	}
 
-	err = tg.client.Call("editMessageLiveLocation", createPayload(Fields{
+	err = tg.client.Call("editMessageLiveLocation", createPayload(fields{
 		"latitude":  latitude,
 		"longitude": longitude,
 	}, opts), &editedMsg)
@@ -148,7 +148,7 @@ func (tg *Telegram) EditMessageLiveLocation(msg Message, latitude, longitude flo
 }
 
 func (tg *Telegram) StopMessageLiveLocation(msg Message, opts ...Option) (editedMsg Message, err error) {
-	err = tg.client.Call("stopMessageLiveLocation", createPayload(Fields{
+	err = tg.client.Call("stopMessageLiveLocation", createPayload(fields{
 		"chat_id":    msg.Chat.ID,
 		"message_id": msg.MessageID,
 	}, opts), &editedMsg)
@@ -156,7 +156,7 @@ func (tg *Telegram) StopMessageLiveLocation(msg Message, opts ...Option) (edited
 }
 
 func (tg *Telegram) SendVenue(chat Chat, latitude, longitude float32, title, address string, opts ...Option) (msg Message, err error) {
-	err = tg.client.Call("sendVenue", createPayload(Fields{
+	err = tg.client.Call("sendVenue", createPayload(fields{
 		"chat_id":   chat.ID,
 		"latitude":  latitude,
 		"longitude": longitude,
@@ -167,7 +167,7 @@ func (tg *Telegram) SendVenue(chat Chat, latitude, longitude float32, title, add
 }
 
 func (tg *Telegram) SendContact(chat Chat, phoneNumber, firstName string, opts ...Option) (msg Message, err error) {
-	err = tg.client.Call("sendContact", createPayload(Fields{
+	err = tg.client.Call("sendContact", createPayload(fields{
 		"chat_id":      chat.ID,
 		"phone_number": phoneNumber,
 		"first_name":   firstName,
@@ -176,7 +176,7 @@ func (tg *Telegram) SendContact(chat Chat, phoneNumber, firstName string, opts .
 }
 
 func (tg *Telegram) SendPoll(chat Chat, question string, variants []string, opts ...Option) (msg Message, err error) {
-	err = tg.client.Call("sendPoll", createPayload(Fields{
+	err = tg.client.Call("sendPoll", createPayload(fields{
 		"chat_id":  chat.ID,
 		"question": question,
 		"options":  variants,
@@ -185,14 +185,14 @@ func (tg *Telegram) SendPoll(chat Chat, question string, variants []string, opts
 }
 
 func (tg *Telegram) SendDice(chat Chat, opts ...Option) (msg Message, err error) {
-	err = tg.client.Call("sendDice", createPayload(Fields{
+	err = tg.client.Call("sendDice", createPayload(fields{
 		"chat_id": chat.ID,
 	}, opts), &msg)
 	return
 }
 
 func (tg *Telegram) SendChatAction(chat Chat, action string) (res bool, err error) {
-	err = tg.client.Call("sendChatAction", createPayload(Fields{
+	err = tg.client.Call("sendChatAction", createPayload(fields{
 		"chat_id": chat.ID,
 		"action":  action,
 	}, []Option{}), &res)
@@ -200,34 +200,34 @@ func (tg *Telegram) SendChatAction(chat Chat, action string) (res bool, err erro
 }
 
 func (tg *Telegram) GetUserProfilePhotos(user User, opts ...Option) (photos UserProfilePhotos, err error) {
-	err = tg.client.Call("getUserProfilePhotos", createPayload(Fields{
+	err = tg.client.Call("getUserProfilePhotos", createPayload(fields{
 		"user_id": user.ID,
 	}, opts), &photos)
 	return
 }
 
 func (tg *Telegram) GetFile(fileID string, opts ...Option) (file File, err error) {
-	err = tg.client.Call("getFile", createPayload(Fields{
+	err = tg.client.Call("getFile", createPayload(fields{
 		"file_id": fileID,
 	}, opts), &file)
 	return
 }
 
 func (tg *Telegram) AnswerCallbackQuery(cbq CallbackQuery, opts ...Option) (answered bool, err error) {
-	err = tg.client.Call("answerCallbackQuery", createPayload(Fields{
+	err = tg.client.Call("answerCallbackQuery", createPayload(fields{
 		"callback_query_id": cbq.ID,
 	}, opts), &answered)
 	return
 }
 
 func (tg *Telegram) SetMyCommands(commands []BotCommand) (setted bool, err error) {
-	err = tg.client.Call("setMyCommands", createPayload(Fields{
+	err = tg.client.Call("setMyCommands", createPayload(fields{
 		"commands": commands,
 	}, []Option{}), &setted)
 	return
 }
 
 func (tg *Telegram) GetMyCommands() (commands []BotCommand, err error) {
-	err = tg.client.Call("getMyCommands", createPayload(Fields{}, []Option{}), &commands)
+	err = tg.client.Call("getMyCommands", createPayload(fields{}, []Option{}), &commands)
 	return
 }

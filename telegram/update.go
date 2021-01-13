@@ -15,8 +15,22 @@ type Update struct {
 	PollAnswer         *PollAnswer         `json:"poll_answer,omitempty"`
 }
 
+var AllowedUpdates []string = []string{
+	"message",
+	"edited_message",
+	"channel_post",
+	"edited_channel_post",
+	"callback_query",
+	"inline_query",
+	"chosen_inline_result",
+	"shipping_query",
+	"pre_checkout_query",
+	"poll",
+	"poll_answer",
+}
+
 func (tg *Telegram) GetUpdates(offset, limit, timeout int, allowedUpdates []string, opts ...Option) (upd []Update, err error) {
-	err = tg.client.Call("getUpdates", createPayload(Fields{
+	err = tg.client.Call("getUpdates", createPayload(fields{
 		"offset":          offset,
 		"limit":           limit,
 		"timeout":         timeout,

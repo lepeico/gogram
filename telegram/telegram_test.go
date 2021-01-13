@@ -3,28 +3,31 @@ package telegram
 import (
 	"log"
 	"os"
+	"strconv"
 	"testing"
 
 	"github.com/joho/godotenv"
 )
 
 var gram *Telegram
-var devID string
+var devID int
 
 var envPath = "./../../.env"
 var filePath = "./../../LICENSE"
 var mediaPath = "./../../examples/telegram/assets/test.mp4"
 
-func gram_init() {
+func gramInit() {
 	botToken, exists := os.LookupEnv("TELEGRAM_TOKEN")
 	if !exists {
 		os.Exit(2)
 	}
 
-	devID, exists = os.LookupEnv("DEV_ID")
+	id, exists := os.LookupEnv("DEV_ID")
 	if !exists {
 		os.Exit(2)
 	}
+
+	devID, _ = strconv.Atoi(id)
 
 	//New Telegram
 	gram = New(botToken)
@@ -35,7 +38,7 @@ func TestMain(m *testing.M) {
 	if err := godotenv.Load(envPath); err != nil {
 		log.Print("No .env file found")
 	}
-	gram_init()
+	gramInit()
 	os.Exit(m.Run())
 }
 
@@ -52,7 +55,7 @@ func TestSendDocument(t *testing.T) {
 	}
 	defer document.Close()
 
-	if _, err := gram.SendDocument(devID, document); err != nil {
+	if _, err := gram.SendDocument(Chat{ID: devID}, document); err != nil {
 		t.Error(err)
 	}
 }

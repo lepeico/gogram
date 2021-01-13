@@ -1,7 +1,7 @@
 package telegram
 
 func (tg *Telegram) KickChatMember(chat Chat, user User, opts ...Option) (res bool, err error) {
-	err = tg.client.Call("kickChatMember", createPayload(Fields{
+	err = tg.client.Call("kickChatMember", createPayload(fields{
 		"chat_id": chat.ID,
 		"user_id": user.ID,
 	}, opts), &res)
@@ -9,7 +9,7 @@ func (tg *Telegram) KickChatMember(chat Chat, user User, opts ...Option) (res bo
 }
 
 func (tg *Telegram) UnbanChatMember(chat Chat, user User, opts ...Option) (res bool, err error) {
-	err = tg.client.Call("unbanChatMember", createPayload(Fields{
+	err = tg.client.Call("unbanChatMember", createPayload(fields{
 		"chat_id": chat.ID,
 		"user_id": user.ID,
 	}, opts), &res)
@@ -17,7 +17,7 @@ func (tg *Telegram) UnbanChatMember(chat Chat, user User, opts ...Option) (res b
 }
 
 func (tg *Telegram) RestrictChatMember(chat Chat, user User, permissions ChatPermissions, opts ...Option) (res bool, err error) {
-	err = tg.client.Call("restrictChatMember", createPayload(Fields{
+	err = tg.client.Call("restrictChatMember", createPayload(fields{
 		"chat_id":     chat.ID,
 		"user_id":     user.ID,
 		"permissions": permissions,
@@ -26,7 +26,7 @@ func (tg *Telegram) RestrictChatMember(chat Chat, user User, permissions ChatPer
 }
 
 func (tg *Telegram) PromoteChatMember(chat Chat, user Chat, opts ...Option) (res bool, err error) {
-	err = tg.client.Call("promoteChatMember", createPayload(Fields{
+	err = tg.client.Call("promoteChatMember", createPayload(fields{
 		"chat_id": chat.ID,
 		"user_id": user.ID,
 	}, opts), &res)
@@ -34,7 +34,7 @@ func (tg *Telegram) PromoteChatMember(chat Chat, user Chat, opts ...Option) (res
 }
 
 func (tg *Telegram) SetChatAdministratorCustomTitle(chat Chat, user User, customTitle string, opts ...Option) (res bool, err error) {
-	err = tg.client.Call("setChatAdministratorCustomTitle", createPayload(Fields{
+	err = tg.client.Call("setChatAdministratorCustomTitle", createPayload(fields{
 		"chat_id":      chat.ID,
 		"user_id":      user.ID,
 		"custom_title": customTitle,
@@ -43,7 +43,7 @@ func (tg *Telegram) SetChatAdministratorCustomTitle(chat Chat, user User, custom
 }
 
 func (tg *Telegram) SetChatPermissions(chat Chat, permissions ChatPermissions, opts ...Option) (res bool, err error) {
-	err = tg.client.Call("setChatPermissions", createPayload(Fields{
+	err = tg.client.Call("setChatPermissions", createPayload(fields{
 		"chat_id":     chat.ID,
 		"permissions": permissions,
 	}, opts), &res)
@@ -51,14 +51,14 @@ func (tg *Telegram) SetChatPermissions(chat Chat, permissions ChatPermissions, o
 }
 
 func (tg *Telegram) ExportChatInviteLink(chat Chat, opts ...Option) (msg Message, err error) {
-	err = tg.client.Call("exportChatInviteLink", createPayload(Fields{
+	err = tg.client.Call("exportChatInviteLink", createPayload(fields{
 		"chat_id": chat.ID,
 	}, opts), msg)
 	return
 }
 
 func (tg *Telegram) SetChatPhoto(chat Chat, photo interface{}, opts ...Option) (msg Message, err error) {
-	err = tg.client.Call("setChatPhoto", createPayload(Fields{
+	err = tg.client.Call("setChatPhoto", createPayload(fields{
 		"chat_id": chat.ID,
 		"photo":   photo,
 	}, opts), msg)
@@ -66,7 +66,7 @@ func (tg *Telegram) SetChatPhoto(chat Chat, photo interface{}, opts ...Option) (
 }
 
 func (tg *Telegram) DeleteChatPhoto(chat Chat, opts ...Option) (msg Message, err error) {
-	err = tg.client.Call("deleteChatPhoto", createPayload(Fields{
+	err = tg.client.Call("deleteChatPhoto", createPayload(fields{
 		"chat_id": chat.ID,
 	}, opts), msg)
 	return
@@ -74,7 +74,7 @@ func (tg *Telegram) DeleteChatPhoto(chat Chat, opts ...Option) (msg Message, err
 
 //TODO: test, description is optional
 func (tg *Telegram) SetChatTitle(chat Chat, title string) (setted bool, err error) {
-	err = tg.client.Call("setChatDescription", createPayload(Fields{
+	err = tg.client.Call("setChatDescription", createPayload(fields{
 		"chat_id": chat.ID,
 		"title":   title,
 	}, []Option{}), &setted)
@@ -83,7 +83,7 @@ func (tg *Telegram) SetChatTitle(chat Chat, title string) (setted bool, err erro
 
 //TODO: test, description is optional
 func (tg *Telegram) SetChatDescription(chat Chat, description string) (setted bool, err error) {
-	err = tg.client.Call("setChatDescription", createPayload(Fields{
+	err = tg.client.Call("setChatDescription", createPayload(fields{
 		"chat_id":     chat.ID,
 		"description": description,
 	}, []Option{}), &setted)
@@ -91,7 +91,7 @@ func (tg *Telegram) SetChatDescription(chat Chat, description string) (setted bo
 }
 
 func (tg *Telegram) PinChatMessage(chat Chat, msg Message, opts ...Option) (pinned bool, err error) {
-	err = tg.client.Call("pinChatMessage", createPayload(Fields{
+	err = tg.client.Call("pinChatMessage", createPayload(fields{
 		"chat_id":    chat.ID,
 		"message_id": msg.MessageID,
 	}, opts), &pinned)
@@ -99,7 +99,7 @@ func (tg *Telegram) PinChatMessage(chat Chat, msg Message, opts ...Option) (pinn
 }
 
 func (tg *Telegram) UnpinChatMessage(chat Chat, msg Message) (unpinned bool, err error) {
-	err = tg.client.Call("unpinChatMessage", createPayload(Fields{
+	err = tg.client.Call("unpinChatMessage", createPayload(fields{
 		"chat_id":    chat.ID,
 		"message_id": msg.MessageID,
 	}, []Option{}), &unpinned)
@@ -107,42 +107,42 @@ func (tg *Telegram) UnpinChatMessage(chat Chat, msg Message) (unpinned bool, err
 }
 
 func (tg *Telegram) UnpinAllChatMessages(chat Chat) (unpinned bool, err error) {
-	err = tg.client.Call("unpinAllChatMessages", createPayload(Fields{
+	err = tg.client.Call("unpinAllChatMessages", createPayload(fields{
 		"chat_id": chat.ID,
 	}, []Option{}), &unpinned)
 	return
 }
 
 func (tg *Telegram) LeaveChat(chat Chat) (leavedChat Chat, err error) {
-	err = tg.client.Call("leaveChat", createPayload(Fields{
+	err = tg.client.Call("leaveChat", createPayload(fields{
 		"chat_id": chat.ID,
 	}, []Option{}), &leavedChat)
 	return
 }
 
 func (tg *Telegram) GetChat(chat Chat) (gettedChat Chat, err error) {
-	err = tg.client.Call("getChat", createPayload(Fields{
+	err = tg.client.Call("getChat", createPayload(fields{
 		"chat_id": chat.ID,
 	}, []Option{}), &gettedChat)
 	return
 }
 
 func (tg *Telegram) GetChatAdministrators(chat Chat) (admins []ChatMember, err error) {
-	err = tg.client.Call("getChatAdministrators", createPayload(Fields{
+	err = tg.client.Call("getChatAdministrators", createPayload(fields{
 		"chat_id": chat.ID,
 	}, []Option{}), &admins)
 	return
 }
 
 func (tg *Telegram) GetChatMembersCount(chat Chat) (count int, err error) {
-	err = tg.client.Call("getChatMembersCount", createPayload(Fields{
+	err = tg.client.Call("getChatMembersCount", createPayload(fields{
 		"chat_id": chat.ID,
 	}, []Option{}), &count)
 	return
 }
 
 func (tg *Telegram) GetChatMember(chat Chat, user User) (member ChatMember, err error) {
-	err = tg.client.Call("getChatMember", createPayload(Fields{
+	err = tg.client.Call("getChatMember", createPayload(fields{
 		"chat_id": chat.ID,
 		"user_id": user.ID,
 	}, []Option{}), &member)
@@ -150,7 +150,7 @@ func (tg *Telegram) GetChatMember(chat Chat, user User) (member ChatMember, err 
 }
 
 func (tg *Telegram) SetChatStickerSet(chat Chat, stickerSetName string) (setted bool, err error) {
-	err = tg.client.Call("setChatStickerSet", createPayload(Fields{
+	err = tg.client.Call("setChatStickerSet", createPayload(fields{
 		"chat_id":          chat.ID,
 		"sticker_set_name": stickerSetName,
 	}, []Option{}), &setted)
@@ -158,7 +158,7 @@ func (tg *Telegram) SetChatStickerSet(chat Chat, stickerSetName string) (setted 
 }
 
 func (tg *Telegram) DeleteChatStickerSet(chat Chat) (deleted bool, err error) {
-	err = tg.client.Call("deleteChatStickerSet", createPayload(Fields{
+	err = tg.client.Call("deleteChatStickerSet", createPayload(fields{
 		"chat_id": chat.ID,
 	}, []Option{}), &deleted)
 	return
