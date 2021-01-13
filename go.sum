@@ -1,2 +1,4 @@
 github.com/joho/godotenv v1.3.0 h1:Zjp+RcGpHhGlrMbJzXTrZZPrWj+1vfm90La1wgB6Bhc=
 github.com/joho/godotenv v1.3.0/go.mod h1:7hK45KPybAkOC6peb+G5yklZfMxEjkZhHbwpqxOKXbg=
+github.com/lepeico/withstyle v1.0.0 h1:ZgAjOGUFv58izK5f0rxdMLU7JLgPAjm2DcqX1yj3VZo=
+github.com/lepeico/withstyle v1.0.0/go.mod h1:4ud1rOJHDIgVN8DD2YtsCF31YWd/tu56cwW/2oLEX9A=
