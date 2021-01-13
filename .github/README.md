@@ -6,6 +6,19 @@
 
 Create incredibly fast Telegram bots in Go.
 
+## TODO before v1
+- [ ] Tests
+- [ ] Options
+- [ ] Webhook
+- [ ] Comments to methods and structures
+- [ ] README
+- [ ] Github Pages
+- [ ] Mark and text methods
+- [ ] Payments, Passport, Games methods
+- [ ] Edit message media
+- [ ] Finish writing commented media methods
+- [ ] Fix EditMessageMedia method
+
 <!--TODO:
 ## Intro
 - Describe very briefly but clearly what the project does.
