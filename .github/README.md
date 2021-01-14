@@ -1,23 +1,9 @@
 <img src="../assets/gogram.png" title="Gogram" height="150" align="right"/>
 
-# Gogram  [![PkgGoDev](https://pkg.go.dev/badge/github.com/lepeico/gogram)](https://pkg.go.dev/github.com/lepeico/gogram)
- <!-- [![Go Report Card](https://goreportcard.com/badge/github.com/lepeico/gogram?style=flat)](https://goreportcard.com/report/github.com/lepeico/gogram) [![Release](https://img.shields.io/github/release/lepeico/gogram.svg?style=flat)](https://github.com/lepeico/gogram/releases/latest) -->
+# Gogram  [![PkgGoDev](https://pkg.go.dev/badge/github.com/lepeico/gogram)](https://pkg.go.dev/github.com/lepeico/gogram) [![Go Report Card](https://goreportcard.com/badge/github.com/lepeico/gogram?style=flat)](https://goreportcard.com/report/github.com/lepeico/gogram) [![Release](https://img.shields.io/github/release/lepeico/gogram.svg?style=flat)](https://github.com/lepeico/gogram/releases/latest)
 > Telegram Bot Framework for Golang
 
 Create incredibly fast Telegram bots in Go.
-
-## TODO before v1
-- [ ] Tests
-- [ ] Options
-- [ ] Webhook
-- [ ] Comments to methods and structures
-- [ ] README
-- [ ] Github Pages
-- [ ] Mark and text methods
-- [ ] Payments, Passport, Games methods
-- [ ] Edit message media
-- [ ] Finish writing commented media methods
-- [ ] Fix EditMessageMedia method
 
 <!--TODO:
 ## Intro
@@ -30,6 +16,7 @@ Create incredibly fast Telegram bots in Go.
 - Note its development status.
 - Include badges.
 - If possible, include screenshots and demo videos.
+
 
 ## Core Technical Concepts/Inspiration
 
@@ -58,14 +45,20 @@ Include any essential instructions for:
 - Format for commit messages
 - Thank you (name contributors)
 
+-->
+
 ## TODO
-- Next steps
-- Features planned
-- Known bugs (shortlist)
-
-## Contact
-- Email address
-- Google Group/mailing list (if applicable)
-- IRC or Slack (if applicable)
-
-## License -->
+### Before v1
+- [ ] Tests
+- [ ] Options
+- [ ] Webhook
+- [ ] Comments to methods and structures
+- [ ] README
+- [x] Github Pages
+- [ ] Mark and text methods
+- [ ] Payments, Passport, Games methods
+- [ ] Edit message media
+- [ ] Finish writing commented media methods
+- [ ] Fix EditMessageMedia method
+### Features planned
+### Known bugs
